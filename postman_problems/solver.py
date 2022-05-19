@@ -2,7 +2,7 @@ import itertools
 import logging
 import networkx as nx
 
-from postman_problems.graph import read_edgelist, create_networkx_graph_from_edgelist, create_required_graph, \
+from postman_problems.graph import create_networkx_graph_from_edgelist, create_required_graph, \
     assert_graph_is_connected, get_odd_nodes, get_shortest_paths_distances, create_complete_graph, dedupe_matching, \
     add_augmenting_path_to_graph, create_eulerian_circuit
 
@@ -11,14 +11,14 @@ logger_rpp = logging.getLogger('{0}.{1}'.format(__name__, 'rpp'))
 logger_cpp = logging.getLogger('{0}.{1}'.format(__name__, 'cpp'))
 
 
-def rpp(edgelist_filename, start_node=None, edge_weight='distance', verbose=False):
+def rpp(edges, start_node=None, edge_weight='distance', verbose=False):
     """
     Solving the RPP from beginning (load network data) to end (finding optimal route).  This optimization makes a
      relatively strong assumption: the starting graph must stay a connected graph when optional edges are removed.
     If this is not so, an assertion is raised.  This class of RPP generalizes to the CPP strategy.
 
     Args:
-        edgelist_filename (str): filename of edgelist.  See cpp.py for more details
+        edges (pandas.Dataframe): A dataframe of edges. Columns: node1,node2,trail,color,distance,estimate,required
         start_node (str): name of starting node.  See cpp.py for more details
         edge_weight (str): name edge attribute that indicates distance to minimize in CPP
         verbose (boolean): log info messages?
@@ -34,11 +34,8 @@ def rpp(edgelist_filename, start_node=None, edge_weight='distance', verbose=Fals
 
     logger_rpp.disabled = not verbose
 
-    logger_rpp.info('read edgelist')
-    el = read_edgelist(edgelist_filename, keep_optional=True)
-
     logger_rpp.info('create full and required graph')
-    g_full = create_networkx_graph_from_edgelist(el)
+    g_full = create_networkx_graph_from_edgelist(edges)
     g_req = create_required_graph(g_full)
     assert_graph_is_connected(g_req)
 
@@ -62,13 +59,13 @@ def rpp(edgelist_filename, start_node=None, edge_weight='distance', verbose=Fals
     return circuit, g_full
 
 
-def cpp(edgelist_filename, start_node=None, edge_weight='distance', verbose=False):
+def cpp(edges, start_node=None, edge_weight='distance', verbose=False):
     """
     Solving the CPP from beginning (load network data) to end (finding optimal route).
     Can be run from command line with arguments from cpp.py, or from an interactive Python session (ex jupyter notebook)
 
     Args:
-        edgelist_filename (str): filename of edgelist.  See cpp.py for more details
+        edges (pandas.Dataframe): A dataframe of edges. Columns: node1,node2,trail,color,distance,estimate,required
         start_node (str): name of starting node.  See cpp.py for more details
         edge_weight (str): name edge attribute that indicates distance to minimize in CPP
         verbose (boolean): log info messages?
@@ -83,9 +80,8 @@ def cpp(edgelist_filename, start_node=None, edge_weight='distance', verbose=Fals
     """
     logger_cpp.disabled = not verbose
 
-    logger_cpp.info('read edgelist and create base graph')
-    el = read_edgelist(edgelist_filename, keep_optional=False)
-    g = create_networkx_graph_from_edgelist(el)
+    logger_cpp.info('create base graph')
+    g = create_networkx_graph_from_edgelist(edges)
 
     logger_cpp.info('get augmenting path for odd nodes')
     odd_nodes = get_odd_nodes(g)

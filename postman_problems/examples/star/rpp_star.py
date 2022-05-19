@@ -5,7 +5,7 @@ import networkx as nx
 from postman_problems.tests.utils import create_mock_csv_from_dataframe
 from postman_problems.stats import calculate_postman_solution_stats
 from postman_problems.solver import rpp, cpp
-
+from postman_problems.graph import read_edgelist
 
 def create_star_graph(n_nodes=10, ring=True):
     """
@@ -63,7 +63,8 @@ def main():
 
     # with required edges only
     edgelist_file = create_mock_csv_from_dataframe(edgelist)
-    circuit_cpp_req, graph_cpp_req = cpp(edgelist_file, start_node=START_NODE)
+    edges = read_edgelist(edgelist_file, keep_optional=False)
+    circuit_cpp_req, graph_cpp_req = cpp(edges, start_node=START_NODE)
     logger.info('Print the CPP solution (required edges only):')
     for e in circuit_cpp_req:
         logger.info(e)
@@ -72,7 +73,8 @@ def main():
     edgelist_all_req = edgelist.copy()
     edgelist_all_req.drop(['required'], axis=1, inplace=True)
     edgelist_file = create_mock_csv_from_dataframe(edgelist_all_req)
-    circuit_cpp_opt, graph_cpp_opt = cpp(edgelist_file, start_node=START_NODE)
+    edges = read_edgelist(edgelist_file, keep_optional=False)
+    circuit_cpp_opt, graph_cpp_opt = cpp(edges, start_node=START_NODE)
     logger.info('Print the CPP solution (optional and required edges):')
     for e in circuit_cpp_opt:
         logger.info(e)
@@ -80,7 +82,8 @@ def main():
     # SOLVE RPP -------------------------------------------------------------------------
 
     edgelist_file = create_mock_csv_from_dataframe(edgelist)  # need to regenerate
-    circuit_rpp, graph_rpp = rpp(edgelist_file, start_node=START_NODE)
+    edges = read_edgelist(edgelist_file, keep_optional=True)
+    circuit_rpp, graph_rpp = rpp(edges, start_node=START_NODE)
 
     logger.info('Print the RPP solution:')
     for e in circuit_rpp:

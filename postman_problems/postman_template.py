@@ -4,6 +4,7 @@ import logging
 from postman_problems.solver import cpp, rpp
 from postman_problems.viz import plot_circuit_graphviz, make_circuit_video, make_circuit_images
 from postman_problems.stats import calculate_postman_solution_stats
+from postman_problems.graph import read_edgelist
 
 
 def get_args():
@@ -135,9 +136,12 @@ def generic_postman(postman_type):
     logger = logging.getLogger(__name__)
 
     logger.info('Solving the {} postman problem..'.format(postman_type))
-    circuit, graph = postman_algo(edgelist_filename=args.edgelist,
-                                       start_node=args.start_node,
-                                       edge_weight=args.edge_weight)
+    logger.info('read edgelist')
+    keep_optional = postman_algo == rpp
+    edges = read_edgelist(args.edgelist, keep_optional=keep_optional)
+    circuit, graph = postman_algo(edges=edges,
+                                  start_node=args.start_node,
+                                  edge_weight=args.edge_weight)
 
     logger.info('Solution:')
     for edge in circuit:
@@ -174,4 +178,3 @@ def generic_postman(postman_type):
                                                fps=args.fps,
                                                format=args.animation_format)
         logger.info(message_animation)
-

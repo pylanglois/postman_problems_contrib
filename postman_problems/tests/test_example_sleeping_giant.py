@@ -117,7 +117,8 @@ def test_nodelist_edgelist_overlap():
 
 
 def test_sleeping_giant_cpp_solution():
-    cpp_solution, graph = cpp(edgelist_filename=EDGELIST, start_node=START_NODE)
+    edges = read_edgelist(EDGELIST, keep_optional=False)
+    cpp_solution, graph = cpp(edges=edges, start_node=START_NODE)
 
     # make number of edges in solution is correct
     assert len(cpp_solution) == 155
@@ -135,7 +136,8 @@ def test_sleeping_giant_cpp_solution():
 
 
 def test_sleeping_giant_rpp_solution():
-    rpp_solution, graph = rpp(edgelist_filename=EDGELIST, start_node=START_NODE)
+    edges = read_edgelist(EDGELIST, keep_optional=True)
+    rpp_solution, graph = rpp(edges=edges, start_node=START_NODE)
 
     # make number of edges in solution is correct
     assert len(rpp_solution) == 151

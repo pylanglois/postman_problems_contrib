@@ -28,7 +28,7 @@ import logging
 import pkg_resources
 from postman_problems.solver import cpp
 from postman_problems.stats import calculate_postman_solution_stats
-
+from postman_problems.graph import read_edgelist
 
 def main():
     """Solve the CPP and save visualizations of the solution"""
@@ -54,7 +54,9 @@ def main():
     # SOLVE CPP -------------------------------------------------------------------------
 
     logger.info('Solve CPP')
-    circuit, graph = cpp(edgelist_filename=EDGELIST, start_node=START_NODE)
+    logger.info('read edgelist')
+    edges = read_edgelist(EDGELIST, keep_optional=False)
+    circuit, graph = cpp(edges=edges, start_node=START_NODE)
 
     logger.info('Print the CPP solution:')
     for e in circuit:

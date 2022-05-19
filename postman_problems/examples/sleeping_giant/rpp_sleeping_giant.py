@@ -7,7 +7,7 @@ import pkg_resources
 import pandas as pd
 from postman_problems.solver import rpp
 from postman_problems.stats import calculate_postman_solution_stats
-
+from postman_problems.graph import read_edgelist
 
 def main():
     """Solve the RPP and save visualizations of the solution"""
@@ -38,7 +38,8 @@ def main():
     # SOLVE RPP -------------------------------------------------------------------------
 
     logger.info('Solve RPP')
-    circuit, graph = rpp(EDGELIST, START_NODE)
+    edges = read_edgelist(EDGELIST, keep_optional=True)
+    circuit, graph = rpp(edges, START_NODE)
 
     logger.info('Print the RPP solution:')
     for e in circuit:
